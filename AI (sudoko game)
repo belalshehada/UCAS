@@ -1,0 +1,132 @@
+
+/**
+ *
+ * @author belal
+ */
+public class Main {
+
+    public static void main(String[] args) {
+        // نضيف هنا مدخلات اللعبة وهي القيم معلومة
+//وظيفة البرنامج:ايجاد القيم المجهولة واكمالهاداخل المصفوفة
+        int[][] my_arry = {
+            {5, 8, 0, 2, 0, 0, 4, 7, 0},
+            {0, 2, 0, 0, 0, 0, 0, 3, 0},
+            {0, 3, 0, 0, 5, 4, 0, 0, 0},
+            {0, 0, 0, 5, 6, 0, 0, 0, 0},
+            {0, 0, 7, 0, 3, 0, 9, 0, 0},
+            {0, 0, 0, 0, 9, 1, 0, 0, 0},
+            {0, 0, 0, 8, 2, 0, 0, 6, 0},
+            {0, 7, 0, 0, 0, 0, 0, 8, 0},
+            {0, 9, 4, 0, 0, 6, 0, 1, 5}};
+        System.out.println("Before SOLVING : ");
+        print_initial(my_arry);//طباعة المصفوفة بشكل اولي (تتضمن القيمة   0 )
+        sudoku(my_arry);//طباعة المصفوفة بدون الاصفار(تعديل على  initial)
+        System.out.println("AFTER SOLVING : ");
+        print_initial(my_arry);
+        System.out.println("*************************************************"
+                + "\n programer:Belal Shehada\n Doctor:Akram Redwan");
+
+    }
+//عرض المصفوفة والتاكد من صحتحا باستخدام دالة(الحل) insafe
+    public static boolean sudoku(int[][] boxes) {//بعض المراجع تختلف في التسمية بين  boxes=grid
+        int[] position = Unassigned(boxes);
+        if (position[0] == -1) {
+            return true;
+        }
+
+        int row = position[0];
+        int col = position[1];
+
+        for (int num = 1; num <= 9; num++) {
+            if (isSafe(boxes, row, col, num)) {
+
+                boxes[row][col] = num;
+                boolean check = sudoku(boxes);
+                if (check == true) {
+                    return true;
+                }
+                boxes[row][col] = 0;
+
+            }
+        }
+        return false;
+    }
+//returns the position of first unassigned position
+    public static int[] Unassigned(int[][] arr) {
+        int[] position = new int[2]; 
+        position[0] = -1;
+        position[1] = -1;
+
+        for (int row = 0; row < arr.length; row++) {
+            for (int col = 0; col < arr.length; col++) {//يتعامل مع القيم الفارغة(0)
+                if (arr[row][col] == 0) {//يجرب الاحتمالات
+                    position[0] = row;
+                    position[1] = col;
+                    return position;
+                }
+            }
+        }
+        return position;
+    }
+//يفحص حالة الرقم في السطر
+    public static boolean usedIn_Row(int[][] grid, int row, int num) {
+        for (int i = 0; i < grid.length; i++) {
+            if (grid[row][i] == num) {
+                return true;
+            }
+        }
+        return false;
+    }
+//يفحص حالة الرقم في العمود
+    public static boolean usedIn_col(int[][] grid, int col, int num) {
+        for (int[] grid1 : grid) {
+            if (grid1[col] == num) {
+                return true;
+            }
+        }
+        return false;
+    }
+//يفحص حالة الرقم في الصندوق ككل
+    public static boolean usedInBox(int[][] grid, int row1Start, int col1Start, int num) {
+        for (int row = 0; row < 3; row++) {
+            for (int col = 0; col < 3; col++) {
+                if (grid[row + row1Start][col + col1Start] == num) {
+                    return true;
+                }
+            }
+        }
+        return false;
+
+    }
+//عمل فحص للارقام بالعتماد على الدوال السابقة عشان نعرف وين نضيف الارقام الجديدة
+    //!=evaluate to a boolean
+    public static boolean isSafe(int[][] grid, int row, int col, int num) {
+        return (!usedIn_col(grid, col, num) && !usedIn_Row(grid, row, num) && !usedInBox(grid, row - row % 3, col - col % 3, num));
+
+    }
+// prints the sudoku(formate)يطبع المصفوفة بالتنسيق الخاص بها
+
+    public static void print_initial(int[][] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            if (i % 3 == 0 && i != 0) {
+                System.out.println("----------|---------|----------");
+            }
+            int count1 = 0;
+            for (int j = 0; j < arr.length; j++) {
+
+                if (j % 3 == 0) {
+                    System.out.print("|");
+                }
+                if (arr[i][j] == 0) {
+                    System.out.print(" " + "-"
+                            + " ");
+                } else {
+                    System.out.print(" " + arr[i][j]
+                            + " ");
+                }
+            }
+            System.out.println();
+        }
+
+    }
+}
